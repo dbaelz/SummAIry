@@ -11,7 +11,7 @@ default_question = "Summarize the following text:"
 default_model = 'llama3.1:8b'
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Summarize text files")
+    parser = argparse.ArgumentParser(description="Summarize text files", add_help=True)
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.0.1")
     
     parser.add_argument("input_file", type=str, help="Path to input file")
