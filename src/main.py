@@ -28,12 +28,18 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.listmodels:
-        print("Available models:")
-        print(ollama.list())
+        list_models()
     elif args.file:        
         print(summarize_file(args.model, args.question, args.file))
     else:
         print("No input file provided.")
+
+
+def list_models() -> None:
+    response = ollama.list()
+    print("Available models:")
+    for model in response.models:
+        print('-', model.model)
 
 def summarize_file(model: str, question: str, input_file: str) -> str:    
     with open(input_file, 'r') as f:
