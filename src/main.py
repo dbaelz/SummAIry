@@ -1,11 +1,8 @@
 import argparse
 import html
 import json
+import ollama
 from typing import Optional
-
-from ollama import chat
-from ollama import ChatResponse
-from ollama import ResponseError
 
 
 PROGRAM_NAME = "SumAIrry"
@@ -18,7 +15,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Summarize text files", add_help=True)
     parser.add_argument("-v", "--version", action="version", version=f"{PROGRAM_NAME} - version {VERSION}")
     
-    parser.add_argument("input_file", type=str, help="Path to input file")
+    mutually_exclusive_group = parser.add_mutually_exclusive_group(required=False)
+    mutually_exclusive_group.add_argument("-lsm", "--listmodels", action='store_true')
+    mutually_exclusive_group.add_argument("-f", "--file", type=str, help="Path to input file")
+    
     parser.add_argument("-q", "--question", type=str, nargs="?", default=default_question,
                     help="Optional: Custom question instead of '${default_question}'")
     parser.add_argument("-m", "--model", type=str, nargs="?", default=default_model,
@@ -27,8 +27,11 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.input_file:        
-        print(summarize_file(args.model, args.question, args.input_file))
+    if args.listmodels:
+        print("Available models:")
+        print(ollama.list())
+    elif args.file:        
+        print(summarize_file(args.model, args.question, args.file))
     else:
         print("No input file provided.")
 
@@ -38,14 +41,14 @@ def summarize_file(model: str, question: str, input_file: str) -> str:
 
 
     try:
-        response: ChatResponse = chat(model=model, messages=[
+        response: ollama.ChatResponse = ollama.chat(model=model, messages=[
             {
                 'role': 'user',
                 'content': f'{question}\n{content}'
             },
         ])
         return response.message.content
-    except ResponseError as e:
+    except ollama.ResponseError as e:
         print(f"Error: {e}")
         return ""
     
