@@ -20,9 +20,9 @@ def main() -> None:
     mutually_exclusive_group.add_argument("-f", "--file", type=str, help="Path to input file")
     
     parser.add_argument("-q", "--question", type=str, nargs="?", default=default_question,
-                    help="Optional: Custom question instead of '${default_question}'")
+                    help=f"Optional: Custom question instead of '{default_question}'")
     parser.add_argument("-m", "--model", type=str, nargs="?", default=default_model,
-                    help="Optional: Custom Ollama model instead of '${default_model}'")
+                    help=f"Optional: Custom Ollama model instead of '{default_model}'")
 
 
     args = parser.parse_args()
@@ -33,7 +33,6 @@ def main() -> None:
         print(summarize_file(args.model, args.question, args.file))
     else:
         print("No input file provided.")
-
 
 def list_models() -> None:
     response = ollama.list()
