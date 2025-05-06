@@ -5,10 +5,10 @@ import ollama
 from typing import Optional
 
 
-PROGRAM_NAME = "SumAIrry"
+PROGRAM_NAME = "SummAIry"
 VERSION = "0.0.1"
 
-default_question = "Summarize the following text:"
+default_question = "Summarize the following text:\n"
 default_model = 'llama3.1:8b'
 
 def main() -> None:
