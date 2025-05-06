@@ -1,6 +1,13 @@
 # SumAIrry - Summarize text files
 Command line tool to summarize text files using AI with a local Ollama instance. The project is mainly developed with AI itself using Visual Studio Code, the [Continue.dev plugin](https://www.continue.dev/), local Ollama instance and Python. So it's more a playground for developing with AI assistant (and chat), using AI tools and learning about AI itself.
 
+## Features
+- Summarize text files using AI
+  - `--file FILE` argument to select file
+  - `--model MODEL` argument to select model (default `llama3.1:8b`)
+  - `--question QUESTION` argument to select question (default `Summarize the following text:`)
+- List all available models with `--list-models`
+
 ## Installation
 1. Install Python (3.8 or higher)
 2. Clone this repository

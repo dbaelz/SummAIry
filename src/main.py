@@ -16,7 +16,7 @@ def main() -> None:
     parser.add_argument("-v", "--version", action="version", version=f"{PROGRAM_NAME} - version {VERSION}")
     
     mutually_exclusive_group = parser.add_mutually_exclusive_group(required=False)
-    mutually_exclusive_group.add_argument("-lsm", "--listmodels", action='store_true')
+    mutually_exclusive_group.add_argument("-lsm", "--list-models", action='store_true')
     mutually_exclusive_group.add_argument("-f", "--file", type=str, help="Path to input file")
     
     parser.add_argument("-q", "--question", type=str, nargs="?", default=default_question,
@@ -27,7 +27,7 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.listmodels:
+    if args.list_models:
         list_models()
     elif args.file:        
         print(summarize_file(args.model, args.question, args.file))
