@@ -1,5 +1,5 @@
 # SummAIry - Summarize text files
-Command line tool to summarize text files using AI with a local Ollama instance. The project is mainly developed with AI itself using Visual Studio Code, the [Continue.dev plugin](https://www.continue.dev/), local Ollama instance and Python. So it's more a playground for developing with AI assistant (and chat), using AI tools and learning about AI itself.
+Command line tool to summarize text files using AI with a local Ollama instance. The project is mainly developed with AI itself using Visual Studio Code, the [Continue.dev plugin](https://www.continue.dev/), local Ollama instance and Python. So it's more a playground for developing with AI assistant (as agent and chat), using AI tools and learning about AI itself.
 
 ## Features
 - Summarize text files using AI
@@ -17,6 +17,16 @@ Command line tool to summarize text files using AI with a local Ollama instance.
 ## Requirements
 - Ollama installed and running locally
 - Optional: Default model is `llama3.1:8b`. Otherwise it's necessary to specifiy the model with the `--model` argument.
+
+## Example usage
+To summarize a text file using the default settings, you can run:
+- `python src/main.py --file example/python-ai.md`
+- `python src/main.py --file example/python-ai.md --question "Count how many times AI is mentioned in this text:\n"`
+- `python src/main.py --file example/python-ai.md --model qwen2.5`
+
+List all available models:
+- `python src/main.py --list-models`
+
 
 ## Contribution
 Feel free to contribute via pull requests.

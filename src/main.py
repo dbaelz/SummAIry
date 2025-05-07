@@ -19,6 +19,7 @@ def main() -> None:
     mutually_exclusive_group.add_argument("-lsm", "--list-models", action='store_true')
     mutually_exclusive_group.add_argument("-f", "--file", type=str, help="Path to input file")
     
+    
     parser.add_argument("-q", "--question", type=str, nargs="?", default=default_question,
                     help=f"Optional: Custom question instead of '{default_question}'")
     parser.add_argument("-m", "--model", type=str, nargs="?", default=default_model,
