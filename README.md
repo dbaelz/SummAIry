@@ -21,8 +21,9 @@ Command line tool to summarize text files using AI with a local Ollama instance.
 ## Example usage
 To summarize a text file using the default settings, you can run:
 - `python src/main.py --file example/python-ai.md`
-- `python src/main.py --file example/python-ai.md --question "Count how many times AI is mentioned in this text:\n"`
+- `python src/main.py --file example/python-ai.md --question "Count how many times AI is mentioned in this text:"`
 - `python src/main.py --file example/python-ai.md --model qwen2.5`
+- `python src/main.py --text "strawberry" --question "How many letter 'R' are in this text:"`
 
 List all available models:
 - `python src/main.py --list-models`
