@@ -46,18 +46,25 @@ def list_models() -> None:
         print('-', model.model)
 
 def summarize_file(model: str, question: str, content: str) -> str:    
-    try:
-        response: ollama.ChatResponse = ollama.chat(model=model, messages=[
-            {
-                'role': 'user',
-                'content': f'{question}\n{content}'
-            },
-        ])
-        return response.message.content
-    except ollama.ResponseError as e:
-        print(f"Error: {e}")
-        return ""
-    
+    max_chunk_size = 2048
+
+    chunks = [content[i:i+max_chunk_size] for i in range(0, len(content), max_chunk_size)]
+
+    summaries = []
+    for chunk in chunks:
+        try:
+            response: ollama.ChatResponse = ollama.chat(model=model, messages=[
+                {
+                    'role': 'user',
+                        'content': f'{question}\n{chunk}'
+                },
+            ])
+            summaries.append(response.message.content)
+        except ollama.ResponseError as e:
+            print(f"Error summarizing chunk: {e}")
+
+    final_summary = "\n".join(summaries)
+    return final_summary
 
 if __name__ == "__main__":
     main()
