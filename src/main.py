@@ -2,6 +2,7 @@ import argparse
 import html
 import json
 import ollama
+import tiktoken
 from typing import Optional
 
 
@@ -45,26 +46,53 @@ def list_models() -> None:
     for model in response.models:
         print('-', model.model)
 
-def summarize_file(model: str, question: str, content: str) -> str:    
-    max_chunk_size = 2048
+# Use tiktoken with gpt2 tolkenizer to chunk text as hacky workaround/hacky solution
+# Another solution would be to download the tokenizer.json with HuggingFace Tokenizer library
+# when the model is available there
+def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> list[str]:
+    enc = tiktoken.get_encoding(model_name)
+    tokens = enc.encode(text)
+    chunks = [tokens[i:i+max_tokens] for i in range(0, len(tokens), max_tokens)]
+    return [enc.decode(chunk) for chunk in chunks]
 
-    chunks = [content[i:i+max_chunk_size] for i in range(0, len(content), max_chunk_size)]
+def summarize_file(model: str, question: str, content: str) -> str:
+    # Hardcoded conservative limit for chunk size
+    # Ollama doesn't support fetching the current context length to calculate it
+    # See https://github.com/ollama/ollama/issues/3582
+    max_chunk_size = 3072
 
-    summaries = []
-    for chunk in chunks:
+    # TODO: Temporary always chunk
+    chunked = True
+    
+    if chunked:
+        chunks = get_token_chunks(content, max_chunk_size)
+        
+        summaries = []
+        for chunk in chunks:
+            try:
+                response: ollama.ChatResponse = ollama.chat(model=model, messages=[
+                    {
+                        'role': 'user',
+                        'content': f'{question}\n{chunk}'
+                    },
+                ])
+                summaries.append(response.message.content)
+            except ollama.ResponseError as e:
+                print(f"Error summarizing chunked text: {e}")
+        
+        return "\n".join(summaries)
+    else:
         try:
             response: ollama.ChatResponse = ollama.chat(model=model, messages=[
                 {
                     'role': 'user',
-                        'content': f'{question}\n{chunk}'
+                    'content': f'{question}\n{content}'
                 },
             ])
-            summaries.append(response.message.content)
+            return response.message.content
         except ollama.ResponseError as e:
-            print(f"Error summarizing chunk: {e}")
-
-    final_summary = "\n".join(summaries)
-    return final_summary
+            print(f"Error summarizing text: {e}")
+            return ""
 
 if __name__ == "__main__":
     main()
