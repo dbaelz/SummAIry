@@ -47,15 +47,6 @@ def list_models() -> None:
     for model in response.models:
         print('-', model.model)
 
-# Use tiktoken with gpt2 tolkenizer to chunk text as hacky workaround/hacky solution
-# Another solution would be to download the tokenizer.json with HuggingFace Tokenizer library
-# when the model is available there
-def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> list[str]:
-    enc = tiktoken.get_encoding(model_name)
-    tokens = enc.encode(text)
-    chunks = [tokens[i:i+max_tokens] for i in range(0, len(tokens), max_tokens)]
-    return [enc.decode(chunk) for chunk in chunks]
-
 def summarize_file(model: str, question: str, chunked: bool, content: str) -> str:
     # Hardcoded conservative limit for chunk size
     # Ollama doesn't support fetching the current context length to calculate it
@@ -91,6 +82,16 @@ def summarize_file(model: str, question: str, chunked: bool, content: str) -> st
         except ollama.ResponseError as e:
             print(f"Error summarizing text: {e}")
             return ""
+        
+# Use tiktoken with gpt2 tolkenizer to chunk text as hacky workaround/hacky solution
+# Another solution would be to download the tokenizer.json with HuggingFace Tokenizer library
+# when the model is available there
+def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> list[str]:
+    enc = tiktoken.get_encoding(model_name)
+    tokens = enc.encode(text)
+    chunks = [tokens[i:i+max_tokens] for i in range(0, len(tokens), max_tokens)]
+    return [enc.decode(chunk) for chunk in chunks]
+
 
 if __name__ == "__main__":
     main()
