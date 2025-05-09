@@ -7,6 +7,7 @@ Command line tool to summarize text files using AI with a local Ollama instance.
   - `--file FILE` argument to select file
   - `--text "a text"` argument to provide a text
   - `--question QUESTION` argument to select question (default `Summarize the following text:`)
+  - `--chunked` argument to chunk the input file/text based on (currently hardcoded) chunk size
 - List all available models with `--list-models`
 
 ## Example usage

@@ -25,7 +25,8 @@ def main() -> None:
                     help=f"Optional: Custom question instead of '{default_question}'")
     parser.add_argument("-m", "--model", type=str, nargs="?", default=default_model,
                     help=f"Optional: Custom Ollama model instead of '{default_model}'")
-
+    parser.add_argument("-c", "--chunked", action="store_true",
+                    help="Split text into chunks and summarize each one separately")
 
     args = parser.parse_args()
 
@@ -34,9 +35,9 @@ def main() -> None:
     elif args.file is not None and args.text is None:    
         with open(args.file, 'r') as f:
             content = f.read()
-        print(summarize_file(args.model, args.question, content))
+        print(summarize_file(args.model, args.question, args.chunked, content))
     elif args.text is not None and args.file is None:
-        print(summarize_file(args.model, args.question, args.text))
+        print(summarize_file(args.model, args.question, args.chunked, args.text))
     else:
         print("No input file provided.")
 
@@ -55,14 +56,11 @@ def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> li
     chunks = [tokens[i:i+max_tokens] for i in range(0, len(tokens), max_tokens)]
     return [enc.decode(chunk) for chunk in chunks]
 
-def summarize_file(model: str, question: str, content: str) -> str:
+def summarize_file(model: str, question: str, chunked: bool, content: str) -> str:
     # Hardcoded conservative limit for chunk size
     # Ollama doesn't support fetching the current context length to calculate it
     # See https://github.com/ollama/ollama/issues/3582
     max_chunk_size = 3072
-
-    # TODO: Temporary always chunk
-    chunked = True
     
     if chunked:
         chunks = get_token_chunks(content, max_chunk_size)
