@@ -58,30 +58,14 @@ def summarize_file(model: str, question: str, chunked: bool, content: str) -> st
         
         summaries = []
         for chunk in chunks:
-            try:
-                response: ollama.ChatResponse = ollama.chat(model=model, messages=[
-                    {
-                        'role': 'user',
-                        'content': f'{question}\n{chunk}'
-                    },
-                ])
-                summaries.append(response.message.content)
-            except ollama.ResponseError as e:
-                print(f"Error summarizing chunked text: {e}")
+            summary = ollama_chat(model, question, chunk)
+            if summary:
+                summaries.append(summary)
         
         return "\n".join(summaries)
     else:
-        try:
-            response: ollama.ChatResponse = ollama.chat(model=model, messages=[
-                {
-                    'role': 'user',
-                    'content': f'{question}\n{content}'
-                },
-            ])
-            return response.message.content
-        except ollama.ResponseError as e:
-            print(f"Error summarizing text: {e}")
-            return ""
+        summary = ollama_chat(model, question, content)
+        return summary if summary else ""
         
 # Use tiktoken with gpt2 tolkenizer to chunk text as hacky workaround/hacky solution
 # Another solution would be to download the tokenizer.json with HuggingFace Tokenizer library
@@ -92,6 +76,19 @@ def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> li
     chunks = [tokens[i:i+max_tokens] for i in range(0, len(tokens), max_tokens)]
     return [enc.decode(chunk) for chunk in chunks]
 
+
+def ollama_chat(model: str, question: str, content: str) -> Optional[str]:
+    try:
+        response: ollama.ChatResponse = ollama.chat(model=model, messages=[
+            {
+                'role': 'user',
+                'content': f'{question}\n{content}'
+            },
+        ])
+        return response.message.content
+    except ollama.ResponseError as e:
+        print(f"Error calling Ollama API: {e}")
+        return None
 
 if __name__ == "__main__":
     main()
