@@ -35,23 +35,23 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.list_models:
-        list_models()
+        list_models(args.host)
     elif args.file is not None and args.text is None:    
         with open(args.file, 'r') as f:
             content = f.read()
-        print(summarize_file(args.model, args.question, args.chunked, content))
+        print(summarize_file(args.host, args.model, args.question, args.chunked, content))
     elif args.text is not None and args.file is None:
-        print(summarize_file(args.model, args.question, args.chunked, args.text))
+        print(summarize_file(args.host, args.model, args.question, args.chunked, args.text))
     else:
         print("No input file provided.")
 
-def list_models() -> None:
-    response = ollama.list()
+def list_models(host: str) -> None:
+    response = ollama.Client(host=host).list()
     print("Available models:")
     for model in response.models:
         print('-', model.model)
 
-def summarize_file(model: str, question: str, chunked: bool, content: str) -> str:
+def summarize_file(host: str, model: str, question: str, chunked: bool, content: str) -> str:
     # Hardcoded conservative limit for chunk size
     # Ollama doesn't support fetching the current context length to calculate it
     # See https://github.com/ollama/ollama/issues/3582
@@ -59,16 +59,16 @@ def summarize_file(model: str, question: str, chunked: bool, content: str) -> st
     
     if chunked:
         chunks = get_token_chunks(content, max_chunk_size)
-        
+
         summaries = []
         for chunk in chunks:
-            summary = ollama_chat(model, question, chunk)
+            summary = ollama_chat(host, model, question, chunk)
             if summary:
                 summaries.append(summary)
         
         return "\n".join(summaries)
     else:
-        summary = ollama_chat(model, question, content)
+        summary = ollama_chat(host, model, question, content)
         return summary if summary else ""
         
 # Use tiktoken with gpt2 tolkenizer to chunk text as hacky workaround/hacky solution
@@ -81,20 +81,17 @@ def get_token_chunks(text: str, max_tokens: int, model_name: str = 'gpt2') -> li
     return [enc.decode(chunk) for chunk in chunks]
 
 
-def ollama_chat(model: str, question: str, content: str) -> Optional[str]:
+def ollama_chat(host: str, model: str, question: str, content: str) -> Optional[str]:
     try:
-        response: ollama.ChatResponse = ollama.chat(model=model, messages=[
+        response = ollama.Client(host=host).chat(model=model, messages=[
             {
                 'role': 'user',
                 'content': f'{question}\n{content}'
             },
         ])
         return response.message.content
-    except ollama.ResponseError as e:
-        print(f"Error calling Ollama API: {e}")
-        return None
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        print(f"Error calling Ollama API: {e}")
         return None
 
 if __name__ == "__main__":
