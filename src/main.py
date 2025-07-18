@@ -89,6 +89,9 @@ def ollama_chat(model: str, question: str, content: str) -> Optional[str]:
     except ollama.ResponseError as e:
         print(f"Error calling Ollama API: {e}")
         return None
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return None
 
 if __name__ == "__main__":
     main()
