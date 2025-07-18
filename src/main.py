@@ -46,10 +46,13 @@ def main() -> None:
         print("No input file provided.")
 
 def list_models(host: str) -> None:
-    response = ollama.Client(host=host).list()
-    print("Available models:")
-    for model in response.models:
-        print('-', model.model)
+    try:
+        response = ollama.Client(host=host).list()
+        print("Available models:")
+        for model in response.models:
+            print('-', model.model)
+    except Exception as e:
+        print(f"Error connecting to Ollama server at {host}: {e}")
 
 def summarize_file(host: str, model: str, question: str, chunked: bool, content: str) -> str:
     # Hardcoded conservative limit for chunk size
