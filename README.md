@@ -9,6 +9,7 @@ Command line tool to summarize text files using AI with a local Ollama instance.
   - `--question QUESTION` argument to select question (default `Summarize the following text:`)
   - `--chunked` argument to chunk the input file/text based on (currently hardcoded) chunk size
 - List all available models with `--list-models`
+- Set Ollama host with optional `--host HOST` argument.  Default is `http://127.0.0.1:11434`
 
 ## Example usage
 To summarize a text file using the default settings, you can run:

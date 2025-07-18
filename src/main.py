@@ -11,6 +11,7 @@ VERSION = "0.0.1"
 
 default_question = "Summarize the following text:"
 default_model = 'llama3.1:8b'
+default_host = "http://127.0.0.1:11434"
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Summarize text files", add_help=True)
@@ -27,6 +28,9 @@ def main() -> None:
                     help=f"Optional: Custom Ollama model instead of '{default_model}'")
     parser.add_argument("-c", "--chunked", action="store_true",
                     help="Split text into chunks and summarize each one separately")
+
+    parser.add_argument("--host", type=str, nargs="?", default=default_host,
+                    help=f"Optional: Set Ollama host. Default: '{default_host}'")
 
     args = parser.parse_args()
 
